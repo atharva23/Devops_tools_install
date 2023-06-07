@@ -1,0 +1,42 @@
+---
+- name: Install Jenkins on Amazon Linux 2
+  hosts: localhost
+  gather_facts: false
+  become: true
+  
+  tasks:
+    - name: Install Java
+      command: sudo amazon-linux-extras install java-openjdk11 -y
+
+    - name: Add Jenkins repository file
+      copy:
+        dest: /etc/yum.repos.d/jenkins.repo
+        content: |
+          [jenkins]
+          name=Jenkins
+          baseurl=https://pkg.jenkins.io/redhat-stable/
+          gpgcheck=1
+          gpgkey=https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+          enabled=1
+
+    - name: Import Jenkins Repository Key
+      rpm_key:
+        key: "https://pkg.jenkins.io/redhat-stable/jenkins.io.key"
+        state: present
+
+    - name: Install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: true
+
+
+    - name: Display initial admin password
+      command: sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: initial_admin_password
+
