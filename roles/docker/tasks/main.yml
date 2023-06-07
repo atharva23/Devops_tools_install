@@ -1,0 +1,33 @@
+---
+
+- name: Update system packages
+  yum:
+    name: '*'
+    state: latest
+  become: true
+
+- name: Install Docker
+  yum:
+    name: docker
+    state: present
+  become: true
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: true
+  become: true
+
+- name: Add user to Docker group
+  user:
+    name: ec2-user
+    groups: docker
+    append: yes
+  become: true
+
+- name: Set permissions for Docker socket
+  file:
+    path: /var/run/docker.sock
+    mode: '0666'
+  become: true
