@@ -1,0 +1,8 @@
+---
+- name: Run roles
+  hosts: localhost
+  become: true
+
+  roles:
+    - jenkins
+    - docker
